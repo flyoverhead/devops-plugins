@@ -1,0 +1,50 @@
+---
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: [v*]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: 1.10.5
+      - name: Format
+        run: terraform fmt -check -recursive
+      - name: Init and validate module
+        run: terraform init -backend=false && terraform validate
+      - name: Init and validate example
+        working-directory: examples
+        run: terraform init -backend=false && terraform validate
+      - uses: terraform-linters/setup-tflint@v6
+      - name: Lint
+        run: tflint --init && tflint --recursive
+      - name: Docs are up to date
+        uses: terraform-docs/gh-actions@v1
+        with:
+          working-dir: .
+          output-file: README.md
+          output-method: inject
+          fail-on-diff: "true"
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" --generate-notes --verify-tag

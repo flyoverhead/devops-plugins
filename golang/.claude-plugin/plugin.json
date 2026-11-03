@@ -1,0 +1,11 @@
+{
+  "name": "golang",
+  "version": "1.0.0",
+  "description": "Go toolkit: version-aware idioms, concurrency fixes proven with the race detector, performance work backed by benchmarks and profiles, read-only code review, tests that match the repository, a GitHub-ready project scaffold and gopls LSP.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["go", "golang", "lsp", "gopls"]
+}

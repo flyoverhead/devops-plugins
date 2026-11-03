@@ -1,0 +1,34 @@
+---
+name: molecule
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  molecule:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        role:
+          - <role>
+    defaults:
+      run:
+        working-directory: roles/${{ matrix.role }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - name: Install molecule
+        run: pip install molecule 'molecule-plugins[docker]' ansible-core
+      - name: Run molecule test
+        run: molecule test
+        env:
+          PY_COLORS: "1"
+          ANSIBLE_FORCE_COLOR: "1"

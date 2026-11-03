@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/format-tf.sh\"", "timeout": 30, "statusMessage": "Formatting Terraform file..." },
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/validate-tf.sh\"", "timeout": 60, "statusMessage": "Validating Terraform module..." }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/guard-tf.sh\"", "timeout": 5 }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\"", "statusMessage": "Detecting Terraform version..." }
+        ]
+      }
+    ]
+  }
+}

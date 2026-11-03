@@ -1,0 +1,58 @@
+---
+extends:
+  - spectral:oas
+rules:
+  operation-operationId: error
+  operation-tags: error
+  operation-summary-required:
+    description: Every operation must carry a summary.
+    severity: error
+    message: Operation has no summary; add a one-line summary
+    documentationUrl: https://spec.openapis.org/oas/v3.1.0#operation-object
+    given: $.paths[*][get,put,post,patch,delete]
+    then:
+      field: summary
+      function: truthy
+  no-verbs-in-path:
+    description: Path segments are nouns; actions are HTTP methods or POST sub-resources.
+    severity: error
+    message: "{{property}} contains a verb; use a noun path or a POST action sub-resource"
+    documentationUrl: https://www.rfc-editor.org/rfc/rfc9110#name-methods
+    given: $.paths[*]~
+    then:
+      function: pattern
+      functionOptions:
+        notMatch: /(get|list|create|add|update|set|delete|remove|fetch)[A-Z_-]
+  operation-security-defined:
+    description: A global security requirement or one on every operation is mandatory.
+    severity: error
+    message: Add a top-level security block or a security entry on each operation
+    documentationUrl: https://spec.openapis.org/oas/v3.1.0#security-requirement-object
+    given: $
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          if:
+            required:
+              - security
+          else:
+            properties:
+              paths:
+                additionalProperties:
+                  properties:
+                    get:
+                      required:
+                        - security
+                    put:
+                      required:
+                        - security
+                    post:
+                      required:
+                        - security
+                    patch:
+                      required:
+                        - security
+                    delete:
+                      required:
+                        - security

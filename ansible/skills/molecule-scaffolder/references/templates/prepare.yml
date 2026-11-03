@@ -1,0 +1,18 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Wait for systemd to finish booting
+      ansible.builtin.command: systemctl is-system-running  # noqa: command-instead-of-module
+      register: <role>_molecule_systemd_state
+      changed_when: false
+      failed_when: <role>_molecule_systemd_state.stdout not in ['running', 'degraded']
+      retries: 30
+      delay: 2
+      until: <role>_molecule_systemd_state.stdout in ['running', 'degraded']
+
+    - name: Refresh the apt package index
+      ansible.builtin.apt:
+        update_cache: true
+      changed_when: false

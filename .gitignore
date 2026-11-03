@@ -1,0 +1,10 @@
+docs/superpowers/
+.superpowers/
+**/evals/results/
+.eval-out/
+.DS_Store
+__pycache__/
+.pytest_cache/
+.venv/
+.ansible/
+.terraform*

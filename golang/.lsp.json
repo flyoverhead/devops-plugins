@@ -1,0 +1,27 @@
+{
+  "go": {
+    "args": [
+      "serve"
+    ],
+    "command": "gopls",
+    "extensionToLanguage": {
+      ".go": "go"
+    },
+    "initializationOptions": {
+      "analyses": {
+        "nilness": true,
+        "shadow": true,
+        "unusedparams": true,
+        "unusedwrite": true
+      },
+      "completeUnimported": true,
+      "gofumpt": true,
+      "staticcheck": true,
+      "usePlaceholders": true
+    },
+    "maxRestarts": 3,
+    "restartOnCrash": true,
+    "shutdownTimeout": 5000,
+    "startupTimeout": 15000
+  }
+}

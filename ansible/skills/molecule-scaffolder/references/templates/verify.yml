@@ -1,0 +1,47 @@
+---
+- name: Verify
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Gather package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Gather service facts
+      ansible.builtin.service_facts:
+
+    - name: Assert the package is installed
+      ansible.builtin.assert:
+        that:
+          - "'<pkg>' in ansible_facts['packages']"
+        fail_msg: <pkg> is not installed
+        success_msg: <pkg> is installed
+
+    - name: Assert the service is running and enabled
+      ansible.builtin.assert:
+        that:
+          - ansible_facts['services']['<service>.service']['state'] | default('') == 'running'
+          - ansible_facts['services']['<service>.service']['status'] | default('') == 'enabled'
+        fail_msg: >-
+          <service> is
+          {{ ansible_facts['services']['<service>.service']['state'] | default('absent') }} /
+          {{ ansible_facts['services']['<service>.service']['status'] | default('absent') }}
+        success_msg: <service> is running and enabled
+
+    - name: Wait for the service port
+      ansible.builtin.wait_for:
+        port: <port>
+        timeout: 30
+
+    - name: Read the rendered config
+      ansible.builtin.slurp:
+        src: <config-path>
+      register: <role>_molecule_config
+
+    - name: Assert the config carries the converge values
+      ansible.builtin.assert:
+        that:
+          - "'<expected-line>' in <role>_molecule_config['content'] | b64decode"
+        fail_msg: <config-path> does not contain <expected-line>
+        success_msg: <config-path> carries the converge values

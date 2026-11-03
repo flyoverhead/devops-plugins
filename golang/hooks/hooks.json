@@ -1,0 +1,21 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/format-go.sh\"", "timeout": 30, "statusMessage": "Formatting Go file with gofmt" },
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/vet-go.sh\"", "timeout": 60, "statusMessage": "Running go vet on the edited package" }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/session-start.sh\"", "statusMessage": "Detecting Go environment" }
+        ]
+      }
+    ]
+  }
+}

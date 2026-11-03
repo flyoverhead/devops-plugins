@@ -1,0 +1,10 @@
+
+dockers_v2:
+  - images:
+      - ghcr.io/<OWNER>/<NAME>
+    tags:
+      - '{{ .Version }}'
+      - latest
+    platforms:
+      - linux/amd64
+      - linux/arm64

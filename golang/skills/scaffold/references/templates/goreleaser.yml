@@ -1,0 +1,25 @@
+version: 2
+
+project_name: <NAME>
+
+builds:
+  - id: <NAME>
+    main: ./cmd/<NAME>
+    env: [CGO_ENABLED=0]
+    flags: [-trimpath]
+    goos: [linux, darwin]
+    goarch: [amd64, arm64]
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    ldflags:
+      - -s -w -X main.Version={{ .Version }} -X main.Commit={{ .ShortCommit }} -X main.Date={{ .Date }}
+
+archives:
+  - formats: [tar.gz]
+    name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+
+checksum:
+  algorithm: sha256
+  name_template: checksums.txt
+
+changelog:
+  use: github

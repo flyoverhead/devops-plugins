@@ -1,0 +1,76 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"fmt"
+	"io"
+	"log/slog"
+	"os"
+	"os/signal"
+	"syscall"
+)
+
+var (
+	Version = "dev"
+	Commit  = "none"
+	Date    = "unknown"
+)
+
+type options struct {
+	version bool
+	debug   bool
+	args    []string
+}
+
+func parseFlags(args []string) (options, error) {
+	var o options
+	set := flag.NewFlagSet("<NAME>", flag.ContinueOnError)
+	set.BoolVar(&o.version, "version", false, "print version and exit")
+	set.BoolVar(&o.debug, "v", false, "enable debug logging")
+	if parseErr := set.Parse(args); parseErr != nil {
+		return options{}, parseErr
+	}
+	o.args = set.Args()
+	return o, nil
+}
+
+func newLogger(w io.Writer, debug bool) *slog.Logger {
+	lvl := slog.LevelInfo
+	if debug {
+		lvl = slog.LevelDebug
+	}
+	handler := slog.NewTextHandler(w, &slog.HandlerOptions{Level: lvl})
+	return slog.New(handler)
+}
+
+func run() error {
+	opts, err := parseFlags(os.Args[1:])
+	if err != nil {
+		return err
+	}
+	if opts.version {
+		_, err := fmt.Printf("<NAME> %s (%s, %s)\n", Version, Commit, Date)
+		return err
+	}
+	logger := newLogger(os.Stderr, opts.debug)
+	slog.SetDefault(logger)
+
+	stopOn := []os.Signal{os.Interrupt, syscall.SIGTERM}
+	ctx, cancel := signal.NotifyContext(context.Background(), stopOn...)
+	defer cancel()
+
+	return execute(ctx, opts.args)
+}
+
+func execute(ctx context.Context, args []string) error {
+	slog.DebugContext(ctx, "nothing to do yet", "args", args)
+	return nil
+}
+
+func main() {
+	if runErr := run(); runErr != nil {
+		fmt.Fprintf(os.Stderr, "<NAME>: %v\n", runErr)
+		os.Exit(1)
+	}
+}

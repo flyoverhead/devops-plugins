@@ -1,0 +1,109 @@
+package main
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"log/slog"
+	"net/http"
+	"net/http/pprof"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+)
+
+var (
+	Version = "dev"
+	Commit  = "none"
+	Date    = "unknown"
+)
+
+const shutdownGrace = 20 * time.Second
+
+func envOr(key, def string) string {
+	if v, found := os.LookupEnv(key); found && v != "" {
+		return v
+	}
+	return def
+}
+
+func appMux() *http.ServeMux {
+	mux := http.NewServeMux()
+	for _, path := range []string{"GET /healthz", "GET /readyz"} {
+		mux.HandleFunc(path, func(w http.ResponseWriter, _ *http.Request) {
+			w.WriteHeader(http.StatusOK)
+		})
+	}
+	return mux
+}
+
+func debugMux() *http.ServeMux {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/debug/pprof/", pprof.Index)
+	mux.HandleFunc("/debug/pprof/profile", pprof.Profile)
+	mux.HandleFunc("/debug/pprof/symbol", pprof.Symbol)
+	mux.HandleFunc("/debug/pprof/trace", pprof.Trace)
+	return mux
+}
+
+func serve(srv *http.Server, failed chan<- error) {
+	err := srv.ListenAndServe()
+	if err != nil && !errors.Is(err, http.ErrServerClosed) {
+		failed <- fmt.Errorf("listen on %s: %w", srv.Addr, err)
+	}
+}
+
+func run() error {
+	app := &http.Server{
+		Addr:              envOr("LISTEN_ADDR", ":8080"),
+		Handler:           appMux(),
+		ReadHeaderTimeout: 5 * time.Second,
+		ReadTimeout:       15 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       time.Minute,
+	}
+	debug := &http.Server{
+		Addr:              envOr("DEBUG_ADDR", "127.0.0.1:6060"),
+		Handler:           debugMux(),
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+	servers := []*http.Server{app, debug}
+
+	stopOn := []os.Signal{os.Interrupt, syscall.SIGTERM}
+	ctx, cancel := signal.NotifyContext(context.Background(), stopOn...)
+	defer cancel()
+
+	failed := make(chan error, len(servers))
+	for _, srv := range servers {
+		go serve(srv, failed)
+	}
+	slog.Info("service started",
+		"addr", app.Addr, "debug_addr", debug.Addr,
+		"version", Version, "commit", Commit, "date", Date)
+
+	var errs []error
+	select {
+	case err := <-failed:
+		errs = append(errs, err)
+	case <-ctx.Done():
+		slog.Info("shutdown requested")
+	}
+
+	sctx, scancel := context.WithTimeout(context.Background(), shutdownGrace)
+	defer scancel()
+	for _, srv := range servers {
+		if err := srv.Shutdown(sctx); err != nil {
+			errs = append(errs, fmt.Errorf("shut down %s: %w", srv.Addr, err))
+		}
+	}
+	return errors.Join(errs...)
+}
+
+func main() {
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
+	if err := run(); err != nil {
+		slog.Error("service exited", "error", err)
+		os.Exit(1)
+	}
+}

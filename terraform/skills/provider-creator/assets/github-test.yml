@@ -1,0 +1,70 @@
+---
+name: Tests
+
+on:
+  pull_request:
+    paths-ignore:
+      - README.md
+  push:
+    paths-ignore:
+      - README.md
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+      - run: go mod download
+      - run: go build -v .
+      - uses: golangci/golangci-lint-action@v9
+
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_wrapper: false
+      - run: go generate ./...
+      - name: Fail when generated files differ
+        run: |
+          git diff --compact-summary --exit-code || \
+            (echo "Generated files are stale. Run 'go generate ./...' and commit the result." && exit 1)
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        terraform:
+          - 1.17.*
+          - 1.16.*
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
+        with:
+          go-version-file: go.mod
+          cache: true
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: ${{ matrix.terraform }}
+          terraform_wrapper: false
+      - run: go mod download
+      - env:
+          TF_ACC: '1'
+        run: go test -v -cover ./internal/provider/
