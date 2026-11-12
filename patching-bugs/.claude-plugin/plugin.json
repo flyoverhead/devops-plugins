@@ -1,0 +1,17 @@
+{
+  "name": "patching-bugs",
+  "version": "1.0.0",
+  "description": "One reported bug, reproduced on the unchanged build, re-run blind by a second agent, fixed at its invariant with a failing-first regression test and a single signed-off local commit, then proven on baseline, patched and reverted worktrees by yet another agent. Records, receipts and hash manifests stay in $TMPDIR; nothing is pushed.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "bug-fixing",
+    "reproduction",
+    "regression-test",
+    "proof"
+  ]
+}

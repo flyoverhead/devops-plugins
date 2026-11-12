@@ -1,0 +1,17 @@
+{
+  "name": "post-patch-validation",
+  "version": "1.0.0",
+  "description": "Proves or disproves a finished security fix by running it: base and patched revisions in scratch worktrees, side-blind exploit and variant checks with a reach marker, behaviour and suite checks, hashed evidence in $TMPDIR, and a status that never claims merge readiness. GitHub PR, commit range, branch pair or patch file.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "patch-validation",
+    "variant-analysis",
+    "regression",
+    "pull-request"
+  ]
+}

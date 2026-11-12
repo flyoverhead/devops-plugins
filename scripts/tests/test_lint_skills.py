@@ -97,8 +97,147 @@ class LintTest(unittest.TestCase):
         self.assertIn('S7-bare-bash', self.rules())
         write(self.root / 'demo/skills/good/SKILL.md', skill(extra='allowed-tools: Bash(npx:*) Read\n'))
         self.assertIn('S7-npx', self.rules())
-        write(self.root / 'demo/skills/good/SKILL.md', skill(extra='allowed-tools: Bash(git diff:*) Read Grep\n'))
+        write(self.root / 'demo/skills/good/SKILL.md', skill(extra='allowed-tools: Bash(git diff:*) Read Grep\n',
+                                                             body='No `--output`.\n'))
         self.assertEqual(self.rules(), set())
+
+    def _tools(self, tools):
+        write(self.root / 'demo/skills/good/SKILL.md', skill(extra=f'allowed-tools: {tools}\n'))
+        return self.rules()
+
+    def test_gh_api_allowed_tools_error(self):
+        self.assertIn('S7-gh-write', self._tools('Bash(gh api:*) Read'))
+
+    def test_gh_pr_comment_error(self):
+        self.assertIn('S7-gh-write', self._tools('Bash(gh pr comment:*) Read'))
+
+    def test_gh_wildcards_error(self):
+        for tok in ('Bash(gh:*)', 'Bash(gh *)', 'Bash(gh pr:*)', 'Bash(gh repo:*)',
+                    'Bash(gh issue:*)', 'Bash(gh release:*)'):
+            self.assertIn('S7-gh-write', self._tools(f'{tok} Read'), tok)
+
+    def test_gh_pr_view_ok(self):
+        self.assertNotIn('S7-gh-write', self._tools('Bash(gh pr view:*) Read'))
+
+    def test_gh_search_code_ok(self):
+        self.assertNotIn('S7-gh-write', self._tools('Bash(gh search code:*) Read'))
+
+    def test_gh_allowlist_flags_other_commands(self):
+        for tok in ('Bash(gh run cancel:*)', 'Bash(gh label create:*)', 'Bash(gh pr checkout:*)',
+                    'Bash(gh pr view*)', 'Bash(gh pr viewer:*)', 'Bash(gh auth login)',
+                    'Bash(GH_TOKEN=x gh issue create:*)'):
+            self.assertIn('S7-gh-write', self._tools(f'{tok} Read'), tok)
+
+    def test_gh_allowlist_accepts_read_forms(self):
+        for tok in ('Bash(gh pr view:*)', 'Bash(gh pr diff:*)', 'Bash(gh pr list:*)',
+                    'Bash(gh repo view:*)', 'Bash(gh search code:*)', 'Bash(gh auth status)',
+                    'Bash(gh pr view 7)'):
+            write(self.root / 'demo/skills/good/SKILL.md',
+                  skill(extra=f'allowed-tools: {tok} Read\n', body='Never pass `--web`.\n'))
+            self.assertEqual(self.rules(), set(), tok)
+
+    def test_ghost_and_ghq_are_not_gh(self):
+        self.assertNotIn('S7-gh-write', self._tools('Bash(ghq list:*) Read'))
+
+    def _flag(self, tools, body):
+        write(self.root / 'demo/skills/good/SKILL.md',
+              skill(extra=f'allowed-tools: {tools}\n', body=body))
+        return 'S7-flag-limits' in self.rules()
+
+    def test_flag_limits_required_per_family(self):
+        cases = [
+            ('Bash(git log:*)', '`--output`'),
+            ('Bash(git show:*)', '`--output`'),
+            ('Bash(git diff:*)', '`--output`'),
+            ('Bash(git grep:*)', '`-O`'),
+            ('Bash(git cat-file:*)', '`--textconv`'),
+            ('Bash(rg:*)', '`--pre`'),
+            ('Bash(semgrep --metrics=off:*)', '`--output`'),
+            ('Bash(SSL_CERT_FILE=/x semgrep --metrics=off:*)', '`-o`'),
+            ('Bash(gh pr view:*)', '`--web`'),
+            ('Bash(go test:*)', '`-toolexec`'),
+            ('Bash(go vet:*)', '`-vettool`'),
+            ('Bash(go build:*)', '`-toolexec`'),
+        ]
+        for tools, flag in cases:
+            self.assertTrue(self._flag(tools, '# Demo\n'), tools)
+            self.assertFalse(self._flag(tools, f'## Limits\n\nNever pass {flag}.\n'), tools)
+
+    def test_flag_limits_ignores_neighbours(self):
+        for tools in ('Bash(git diff-tree:*)', 'Bash(git log-ish)', 'Bash(rgx:*)',
+                      'Bash(command -v semgrep)', 'Bash(go buildx:*)', 'Bash(git rev-parse:*)'):
+            self.assertFalse(self._flag(tools, '# Demo\n'), tools)
+
+    def test_flag_limits_lookalike_flags_do_not_count(self):
+        self.assertTrue(self._flag('Bash(rg:*)', 'Use `--pre-glob`.\n'))
+        self.assertTrue(self._flag('Bash(git grep:*)', 'Use `-Ofast`.\n'))
+        self.assertTrue(self._flag('Bash(semgrep --metrics=off:*)', 'Use `-of`.\n'))
+        self.assertTrue(self._flag('Bash(semgrep --metrics=off:*)', 'Use `--output-dir`.\n'))
+        self.assertTrue(self._flag('Bash(git diff:*)', 'Use `--output-indicator-new`.\n'))
+        self.assertTrue(self._flag('Bash(gh pr view:*)', 'Use `--web-url`.\n'))
+
+    def test_go_build_needs_toolexec_not_other_flags(self):
+        self.assertTrue(self._flag('Bash(go build:*)', 'Never pass `-vettool` or `-o`.\n'))
+        self.assertFalse(self._flag('Bash(go build:*)', '`go build`: never `-toolexec` or `-o`.\n'))
+
+    def test_cat_file_no_textconv_is_not_a_limit(self):
+        self.assertTrue(self._flag('Bash(git cat-file:*)', 'Run `git cat-file --no-textconv`.\n'))
+
+    def test_git_any_subcommand_is_error(self):
+        for tok in ('Bash(git:*)', 'Bash(git *)', 'Bash(git*)', 'Bash(git -C:*)', 'Bash(git -C *)',
+                    'Bash(git -c:*)', 'Bash(GIT_PAGER=cat git:*)'):
+            self.assertIn('S7-git-any', self._tools(f'{tok} Read'), tok)
+        for tok in ('Bash(git rev-parse:*)', 'Bash(gitleaks:*)', 'Bash(git status)'):
+            self.assertNotIn('S7-git-any', self._tools(f'{tok} Read'), tok)
+
+    def test_agent_git_any_is_error(self):
+        self.assertIn('S7-git-any', self._agent('Read, Bash(git -C:*)'))
+
+    def test_agent_without_tools_line(self):
+        write(self.root / 'demo/agents/a.md', '---\nname: a\ndescription: A.\n---\nDo it.\n')
+        self.assertIn('S7-agent-tools', self.rules())
+        self.assertNotIn('S7-agent-tools', self._agent('Read, Grep, Glob'))
+
+    def _history(self, body, where='demo/skills/good/references/r.md'):
+        write(self.root / where, body)
+        return 'S11-no-ext-diff' in self.rules()
+
+    def test_history_flags_required(self):
+        for body in ('Run `git diff <base> <head>`.\n', 'Read `git show <base>:<path>`.\n',
+                     '```bash\ngit log -S\'x\' -p -- a/\n```\n', 'Use `git show --stat <sha>`.\n',
+                     '```bash\ngit diff --stat \\\n  <range>\n```\n',
+                     'Use `git -C ../x diff HEAD`.\n', '`git diff --no-ext-diff HEAD`\n'):
+            self.assertTrue(self._history(body), body)
+        self.assertTrue(self._history('Run `git diff HEAD`.\n', 'demo/agents/a.md'))
+
+    def test_history_flags_accepted_or_not_applicable(self):
+        for body in ('Run `git diff --no-ext-diff --no-textconv <base> <head>`.\n',
+                     'Read `git show --no-ext-diff --no-textconv <base>:<path>`.\n',
+                     '```bash\ngit log --no-ext-diff --no-textconv -S\'x\' -p\n```\n',
+                     'Read `git diff`, then `git show`.\n', '`git log --oneline <range>`\n',
+                     '`git diff`: never `--output`.\n', 'Never `git diff --no-index a b`.\n',
+                     '`git diff-tree -r HEAD`, `git show-ref`\n', 'Plain git diff HEAD in prose.\n',
+                     '`git diff --no-ext-diff --no-textconv HEAD > out.patch`\n'):
+            self.assertFalse(self._history(body), body)
+
+    def _agent(self, tools, body='Do it.\n'):
+        write(self.root / 'demo/agents/a.md', f'---\nname: a\ndescription: A.\ntools: {tools}\n---\n{body}')
+        return self.rules()
+
+    def test_agent_bare_bash(self):
+        self.assertIn('S7-bare-bash', self._agent('Read, Grep, Bash'))
+        self.assertNotIn('S7-bare-bash', self._agent('Read, Bash(git show:*)', 'No `--output`.\n'))
+        self.assertNotIn('S7-bare-bash', self._agent('Read, Grep, Glob'))
+
+    def test_agent_gh_write_and_flags(self):
+        self.assertIn('S7-gh-write', self._agent('Read, Bash(gh pr comment:*)', 'No `--web`.\n'))
+        self.assertIn('S7-flag-limits', self._agent('Read, Bash(gh search code:*)'))
+        self.assertEqual(self._agent('Read, Bash(gh search code:*)', 'No `--web`.\n'), set())
+
+    def test_agent_tools_as_list(self):
+        write(self.root / 'demo/agents/a.md',
+              '---\nname: a\ndescription: A.\ntools:\n  - Read\n  - Bash\n---\nx\n')
+        self.assertIn('S7-bare-bash', self.rules())
 
     def test_s7_model_pin(self):
         write(self.root / 'demo/skills/good/SKILL.md', skill(extra='model: sonnet\n'))

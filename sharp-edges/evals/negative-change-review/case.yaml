@@ -1,0 +1,6 @@
+---
+schema_version: "1.1"
+name: negative-change-review
+tags: [negative]
+context:
+  scaffold_script: setup.sh

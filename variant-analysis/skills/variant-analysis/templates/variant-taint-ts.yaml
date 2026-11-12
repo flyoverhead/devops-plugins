@@ -1,0 +1,52 @@
+---
+rules:
+  - id: variant-taint-ts
+    languages: [typescript, javascript]
+    severity: ERROR
+    mode: taint
+    message: >-
+      Untrusted input reaches a dangerous call without the protection the original
+      bug lacked. Replace this message with the root-cause statement.
+    metadata:
+      category: security
+      variant-of: <path:line of the original bug>
+    pattern-sources:
+      - pattern-either:
+          - pattern: $REQ.query
+          - pattern: $REQ.body
+          - pattern: $REQ.params
+          - pattern: $REQ.headers
+          - pattern: process.argv
+          - pattern: process.env
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: parseInt(...)
+          - pattern: Number(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $CP.exec($X, ...)
+              - pattern: $CP.execSync($X, ...)
+              - pattern: exec($X, ...)
+              - pattern: execSync($X, ...)
+              - pattern: "$CP.spawn($X, $ARGS, {..., shell: true, ...})"
+          - focus-metavariable: $X
+      - patterns:
+          - pattern: $DB.$RAW($Q, ...)
+          - metavariable-regex:
+              metavariable: $RAW
+              regex: ^(query|raw|\$queryRawUnsafe|\$executeRawUnsafe)$
+          - focus-metavariable: $Q
+      - patterns:
+          - pattern-either:
+              - pattern: $FS.readFile($P, ...)
+              - pattern: $FS.readFileSync($P, ...)
+              - pattern: $FS.createReadStream($P, ...)
+              - pattern: $RES.sendFile($P, ...)
+          - focus-metavariable: $P
+      - patterns:
+          - pattern-either:
+              - pattern: $EL.innerHTML = $X
+              - pattern: $EL.outerHTML = $X
+              - pattern: "{dangerouslySetInnerHTML: {__html: $X}}"
+          - focus-metavariable: $X

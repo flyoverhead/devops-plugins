@@ -145,3 +145,9 @@ it — why a value is pinned per release, why a test-only package is installed i
   `prepare.yml`, `converge.yml`, `verify.yml`, `requirements.yml`, `github-molecule.yml`.
 - [../role-creator/references/RULES.md](../role-creator/references/RULES.md) — the rules
   the audited role follows.
+
+## Limits
+
+- `git diff`, `git show`, `git log`: never `--output`, `--ext-diff` or `--textconv`; they write
+  files or run external programs. Every `git diff`, `git show` and patch-showing `git log` carries
+  `--no-ext-diff --no-textconv`.

@@ -147,3 +147,10 @@ secrets, registering the public key and the first registry publish are user step
 
 - `terraform:module-creator` for modules.
 - Agent `terraform:terraform-engineer` for state and plan review.
+
+## Limits
+
+- `go test` and `go vet`: never `-exec`, `-toolexec`, `-vettool` or `-overlay`; they run other
+  programs in place of the toolchain's own.
+- `go build`: never `-toolexec`, `-overlay` or `-o`; they run other programs or write the
+  binary over any path. `go build ./...` is enough to prove the code compiles.

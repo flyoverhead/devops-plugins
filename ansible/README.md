@@ -17,6 +17,8 @@ Ansible roles in the classic upstream layout, a checker that fixes and restructu
 ## Agent
 
 `ansible-engineer`: inventory layout, role boundaries, variable precedence and rollout design across many hosts.
+Read-only: its tools are Read, Grep, Glob, `ansible-lint`, `yamllint`,
+`ansible-playbook --syntax-check` and `git log`; check-mode and real runs are handed to you.
 
 ## Hooks
 

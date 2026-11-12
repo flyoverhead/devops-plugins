@@ -78,3 +78,8 @@ Commit any crashers the fuzzer saves under `testdata/fuzz/`.
 - A test that passes alone but fails under `./...` shares global state. Fix the state, not the order.
 
 Code to start from: [test-templates.md](references/test-templates.md).
+
+## Limits
+
+- `go test` and `go vet`: never `-exec`, `-toolexec`, `-vettool` or `-overlay`; they run other
+  programs in place of the toolchain's own.

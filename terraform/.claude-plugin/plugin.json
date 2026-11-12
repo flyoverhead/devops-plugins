@@ -1,6 +1,6 @@
 {
   "name": "terraform",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Terraform toolkit: module-creator for YAML-driven modules with inheritance and validation layers (OpenStack, VMware, AWS, Azure, GCP, Proxmox), provider-creator for Plugin Framework providers with a GitHub Actions release, plus terraform-ls LSP and safety hooks",
   "author": {
     "name": "Aleksandr Letunov",

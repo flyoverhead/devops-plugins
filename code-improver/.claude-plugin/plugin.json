@@ -1,0 +1,17 @@
+{
+  "name": "code-improver",
+  "version": "1.0.0",
+  "description": "User-started review-and-fix loop over one directory: a reviewer you name (any installed review skill or agent) reports into a findings ledger kept under $TMPDIR, a scoped fixer agent repairs the blocking findings, a content-hash guard halts on any edit outside the agreed scope, oscillating findings go back to you, and the run counts as converged only after a clean re-review and a checked finalize pass. Never commits or pushes.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "review",
+    "fix-loop",
+    "ledger",
+    "scope-guard",
+    "code-quality"
+  ]
+}

@@ -60,3 +60,10 @@ A leak is a goroutine nothing can unblock. To find one:
 - Group the goroutines by blocking line. A count that grows between dumps is the leak.
 
 In tests use `testing/synctest` (1.25+): `synctest.Test(t, func(t *testing.T) { ... synctest.Wait() ... })`. Time is fake, the test fails when the bubble deadlocks (every goroutine is durably blocked and no timer is pending to advance the clock), and it waits for the bubble's goroutines to exit. Every goroutine needs a documented exit condition. Example: [synctest](references/patterns.md#synctest).
+
+## Limits
+
+- `go test` and `go vet`: never `-exec`, `-toolexec`, `-vettool` or `-overlay`; they run other
+  programs in place of the toolchain's own.
+- `go build`: never `-toolexec`, `-overlay` or `-o`; they run other programs or write the
+  binary over any path. `go build ./...` is enough to prove the code compiles.

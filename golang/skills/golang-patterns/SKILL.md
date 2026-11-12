@@ -102,3 +102,10 @@ gofmt -l . && go vet ./... && go build ./... && go test ./...
 ```
 
 `gofmt -l` exits 0 even when it lists files, so any output is a failure. Run `gofmt -w` on the listed files, then rerun the whole command until it is clean.
+
+## Limits
+
+- `go test` and `go vet`: never `-exec`, `-toolexec`, `-vettool` or `-overlay`; they run other
+  programs in place of the toolchain's own.
+- `go build`: never `-toolexec`, `-overlay` or `-o`; they run other programs or write the
+  binary over any path. `go build ./...` is enough to prove the code compiles.

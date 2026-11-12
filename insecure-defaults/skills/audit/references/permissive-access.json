@@ -1,0 +1,21 @@
+{
+  "id": "permissive-access",
+  "title": "Over-broad access",
+  "seeds": [
+    "(Access-Control-Allow-Origin|allow_origins|AllowOrigins|AllowedOrigins|allowedOrigins|origins?|CORS_ALLOWED_ORIGINS|CORS_ORIGIN)[\"']?[[:space:]]*(:=|=|:|,)[[:space:]]*(\\[\\]string\\{|\\[)?[[:space:]]*[\"']\\*[\"']",
+    "(mode|perm|permissions)[\"']?[[:space:]]*(:|=)[[:space:]]*[\"']?(0?(777|776|766|666)|a\\+w|o\\+w)",
+    "(chmod|Chmod|Mkdir|MkdirAll|WriteFile|OpenFile|mkdir)[^;]*[^0-9](0?777|0?766|0?666|a\\+w|o\\+w|0o777|0o666)",
+    "umask[[:space:](]+0+([^0-9]|$)",
+    "(public-read|public-read-write|PublicRead|publicRead|authenticated-read|block_public_acls[[:space:]]*=[[:space:]]*false|BlockPublicAcls:[[:space:]]*false)",
+    "(allUsers|allAuthenticatedUsers|0\\.0\\.0\\.0/0|::/0)",
+    "(bind|listen|host|addr|address|Addr|HOST|BIND|LISTEN|ListenAndServe)[A-Za-z0-9_]*[\"']?[[:space:]]*(:=|=|:|\\()[[:space:]]*[\"'](0\\.0\\.0\\.0|\\*|::|\\[::\\])?(:[0-9]+)?[\"']",
+    "(AllowAny|permitAll\\(\\)|anonymous[A-Za-z_]*[\"']?[[:space:]]*(:|=)[[:space:]]*true|privileged:[[:space:]]*true|runAsUser:[[:space:]]*0([^0-9]|$)|allowPrivilegeEscalation:[[:space:]]*true)",
+    "(publicly_accessible|associate_public_ip_address|map_public_ip_on_launch|public_network_access_enabled)[[:space:]]*=[[:space:]]*true",
+    "(pull_request_target|workflow_run)",
+    "permissions:[[:space:]]*write-all",
+    "uses:[[:space:]]*[\"']?[A-Za-z0-9_.-]+/[A-Za-z0-9_./-]+@([^0-9a-f[:space:]\"']|[0-9a-f]{1,39}([^0-9a-f]|$))",
+    "\\$\\{\\{[[:space:]]*(github\\.event\\.|github\\.head_ref)",
+    "secrets:[[:space:]]*inherit",
+    "runs-on:[[:space:]]*\\[?[[:space:]]*self-hosted"
+  ]
+}

@@ -16,7 +16,8 @@ YAML-driven Terraform modules and Plugin Framework providers, with terraform-ls 
 ## Agent
 
 `terraform-engineer`: state layout, root configuration structure, module boundaries and plan
-review across several modules or states.
+review across several modules or states. Read-only: its tools are Read, Grep, Glob,
+`terraform fmt -check`, `terraform validate` and `git log`.
 
 ## Hooks
 

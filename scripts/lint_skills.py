@@ -22,6 +22,28 @@ PROCEED = re.compile(r'proceed to\s+[`*]*([\w./-]+\.md)', re.I)
 PROHIBITION = re.compile(r"\b(never|do not|don't|must not|forbidden|banned|not allowed)\b", re.I)
 TOOL_TOKEN = re.compile(r'[\w.*-]+(?:\([^)]*\))?')
 NPX = re.compile(r'^Bash\(npx(?::\*| \*|\*)\)$')
+GH_READ = re.compile(r'^Bash\(gh (pr (view|diff|list)|repo view|search code|auth status)( |:|\))')
+GH_CMD = re.compile(r'^gh(?:[\s:*]|$)')
+ENV_PREFIX = re.compile(r'^(?:[A-Za-z_]\w*=\S*\s+)+')
+FLAG_FAMILIES = [
+    ('git log/show/diff', re.compile(r'^git (?:log|show|diff)(?:[\s:*]|$)'), '--output',
+     [re.compile(r'--output(?![\w-])')]),
+    ('git grep', re.compile(r'^git grep(?:[\s:*]|$)'), '-O', [re.compile(r'(?<![\w-])-O(?![\w-])')]),
+    ('git cat-file', re.compile(r'^git cat-file(?:[\s:*]|$)'), '--textconv',
+     [re.compile(r'(?<![\w-])--textconv(?![\w-])')]),
+    ('rg', re.compile(r'^rg(?:[\s:*]|$)'), '--pre', [re.compile(r'--pre(?![\w-])')]),
+    ('semgrep', re.compile(r'^semgrep(?:[\s:*]|$)'), '--output or -o',
+     [re.compile(r'--output(?![\w-])'), re.compile(r'(?<![\w-])-o(?![\w-])')]),
+    ('gh', GH_CMD, '--web', [re.compile(r'--web(?![\w-])')]),
+    ('go test/vet', re.compile(r'^go (?:test|vet)(?:[\s:*]|$)'), '-toolexec or -vettool',
+     [re.compile(r'-toolexec(?![\w-])'), re.compile(r'-vettool(?![\w-])')]),
+    ('go build', re.compile(r'^go build(?:[\s:*]|$)'), '-toolexec',
+     [re.compile(r'-toolexec(?![\w-])')]),
+]
+GIT_ANY = re.compile(r'^git(?:\*|:\*| \*| -[Cc](?:[\s:*]|$))')
+GIT_HISTORY = re.compile(r'\bgit(?:\s+-C\s+\S+)?\s+(diff|show|log)(?![\w-])((?:[^|;&>]|(?<=\S)>)*)')
+LOG_PATCH = re.compile(r'(?<![\w-])(?:-p|-u|--patch|-L\S*|--cc)(?![\w-])')
+BANNED_HISTORY_FLAG = re.compile(r'(?<![\w-])--(?:no-index|output|ext-diff|textconv)(?![\w-])')
 MODEL_PIN = {'sonnet', 'haiku', 'opus'}
 DESC_HARD, DESC_SOFT = 1536, 600
 BODY_HARD, BODY_SOFT = 500, 250
@@ -117,16 +139,45 @@ def check_skill(root, path, rep):
         rep.error(r, body_start, 'S3-body-length', f'body {n} lines > {BODY_HARD}')
     elif n > BODY_SOFT:
         rep.warn(r, body_start, 'S3-body-length', f'body {n} lines > {BODY_SOFT} target')
-    tools = meta.get('allowed-tools') or []
-    tokens = tools if isinstance(tools, list) else TOOL_TOKEN.findall(str(tools))
+    check_tools(r, tool_tokens(meta.get('allowed-tools')), '\n'.join(body), rep)
+    if str(meta.get('model', '')).lower() in MODEL_PIN:
+        rep.error(r, 1, 'S7-model-pin', f'model: {meta["model"]} overrides the caller')
+
+
+def tool_tokens(tools):
+    if not tools:
+        return []
+    if isinstance(tools, list):
+        return [str(t).strip() for t in tools]
+    return TOOL_TOKEN.findall(str(tools))
+
+
+def bash_command(tok):
+    if not (tok.startswith('Bash(') and tok.endswith(')')):
+        return None
+    return ENV_PREFIX.sub('', tok[5:-1].strip())
+
+
+def check_tools(r, tokens, body, rep):
+    missing = {}
     for tok in tokens:
-        tok = str(tok).strip()
         if tok == 'Bash':
             rep.error(r, 1, 'S7-bare-bash', 'bare Bash pre-approves every command')
         if NPX.match(tok):
             rep.error(r, 1, 'S7-npx', 'Bash(npx:*) runs any package; name the package')
-    if str(meta.get('model', '')).lower() in MODEL_PIN:
-        rep.error(r, 1, 'S7-model-pin', f'model: {meta["model"]} overrides the caller')
+        cmd = bash_command(tok)
+        if cmd is None:
+            continue
+        if GIT_ANY.match(cmd):
+            rep.error(r, 1, 'S7-git-any', f'{tok} pre-approves every git subcommand; name each one')
+        if GH_CMD.match(cmd) and not GH_READ.match(f'Bash({cmd})'):
+            rep.error(r, 1, 'S7-gh-write', f'{tok} is not a known gh read command; keep gh read-only')
+        for family, prefix, label, flags in FLAG_FAMILIES:
+            if prefix.match(cmd) and not any(f.search(body) for f in flags):
+                missing.setdefault(family, label)
+    for family, label in missing.items():
+        rep.error(r, 1, 'S7-flag-limits',
+                  f'{family} is pre-allowed but the text never names {label} as forbidden')
 
 
 def check_references(root, skill_dir, rep):
@@ -187,11 +238,32 @@ def check_safety(root, path, rep):
                     rep.error(rel(root, path), no, 'S6-signoff', 'git commit needs -s')
 
 
+def check_history_flags(root, path, rep):
+    for no, line, in_fence in fenced_lines(path.read_text()):
+        for span in code_spans(line, in_fence):
+            for m in GIT_HISTORY.finditer(span):
+                sub, args = m.group(1), m.group(2).strip()
+                if not args or BANNED_HISTORY_FLAG.search(args):
+                    continue
+                if sub == 'log' and not LOG_PATCH.search(args):
+                    continue
+                if '--no-ext-diff' not in args or '--no-textconv' not in args:
+                    rep.error(rel(root, path), no, 'S11-no-ext-diff',
+                              f'git {sub} needs --no-ext-diff --no-textconv: {m.group(0).strip()}')
+
+
 def check_agent(root, path, rep):
     text = path.read_text()
     r = rel(root, path)
-    if split_frontmatter(text)[0] is None:
+    meta, _, body, _ = split_frontmatter(text)
+    if meta is None:
         rep.error(r, 1, 'S1-frontmatter', 'frontmatter must be a YAML mapping')
+    else:
+        if 'tools' not in meta:
+            rep.error(r, 1, 'S7-agent-tools', 'agent has no tools: line and inherits every tool')
+        tools = meta.get('tools') or []
+        tokens = tools if isinstance(tools, list) else [t.strip() for t in str(tools).split(',')]
+        check_tools(r, [str(t).strip() for t in tokens if str(t).strip()], '\n'.join(body), rep)
     if len(text.splitlines()) > AGENT_MAX:
         rep.error(r, 1, 'S10-agent-length', f'{len(text.splitlines())} lines > {AGENT_MAX}')
     if re.search(r'context manager', text, re.I):
@@ -250,8 +322,10 @@ def run_lint(root, validate=True, require_claude=False):
             check_references(root, sk.parent, rep)
             for md in sorted(sk.parent.rglob('*.md')):
                 check_safety(root, md, rep)
+                check_history_flags(root, md, rep)
         for ag in sorted(pdir.glob('agents/**/*.md')):
             check_agent(root, ag, rep)
+            check_history_flags(root, ag, rep)
     check_xrefs(root, known, rep)
     check_repo(root, rep, validate, require_claude)
     return rep

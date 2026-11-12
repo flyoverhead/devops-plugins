@@ -4,7 +4,7 @@ description: Checks an existing Ansible role against the classic upstream conven
 argument-hint: "[role-path]"
 effort: high
 paths: ["roles/**", "ansible/roles/**"]
-allowed-tools: Bash(ansible-lint:*) Bash(yamllint:*) Bash(pre-commit run:*) Bash(ansible-playbook --syntax-check:*) Bash(molecule test:*) Bash(git status:*) Bash(git diff:*) Bash(git show:*) Bash(git mv:*) Bash(git rm:*) Bash(python3 -c:*) Bash(date +%F) Bash(ls:*) Read Write Edit Grep Glob
+allowed-tools: Bash(ansible-lint:*) Bash(yamllint:*) Bash(pre-commit run:*) Bash(ansible-playbook --syntax-check:*) Bash(molecule test:*) Bash(git status:*) Bash(git diff:*) Bash(git show:*) Bash(git mv:*) Bash(git rm:*) Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/yaml_equal.py:*) Bash(date +%F) Bash(ls:*) Read Write Edit Grep Glob
 ---
 
 # Ansible role checker
@@ -150,6 +150,14 @@ files, and numbered questions for the ask items.
   each violation, with grep commands and the matching ansible-lint rule.
 - [references/RESTRUCTURE.md](references/RESTRUCTURE.md) — stage-file layout restructure: plan,
   precondition, apply, verify, report.
+- `${CLAUDE_SKILL_DIR}/scripts/yaml_equal.py <old> <new>` — compares two YAML files by parsed
+  value (`-` reads stdin); exit 0 equal, 1 different, 2 error. Used by the restructure verify step.
 - [../role-creator/references/ROLES.md](../role-creator/references/ROLES.md) — templates
   for the target layout; `ansible:role-creator` generates missing components once the
   user agrees.
+
+## Limits
+
+- `git diff`, `git show`, `git log`: never `--output`, `--ext-diff` or `--textconv`; they write
+  files or run external programs. Every `git diff`, `git show` and patch-showing `git log` carries
+  `--no-ext-diff --no-textconv`.

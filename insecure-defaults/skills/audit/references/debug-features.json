@@ -1,0 +1,19 @@
+{
+  "id": "debug-features",
+  "title": "Debug surfaces left on",
+  "seeds": [
+    "(DEBUG|TRACE|debug|Debug)[A-Za-z0-9_]*[\"']?[[:space:]]*(:=|=|:)[[:space:]]*[\"']?(true|True|TRUE|1|yes|on)[\"']?([^A-Za-z0-9]|$)",
+    "(getenv|environ\\.get|Getenv|env\\.get|envOr|getEnv)\\([[:space:]]*[\"'][A-Za-z0-9_]*(DEBUG|debug)[A-Za-z0-9_]*[\"'][[:space:]]*,[[:space:]]*[\"']?(true|True|1|yes|on)",
+    "(process\\.env\\.[A-Za-z0-9_]*DEBUG[A-Za-z0-9_]*|getenv\\([[:space:]]*[\"'][A-Za-z0-9_]*DEBUG[A-Za-z0-9_]*[\"'][[:space:]]*\\))[[:space:]]*(\\|\\||\\?\\?|or)[[:space:]]*[\"']?(true|1|yes|on)",
+    "(introspection|playground|graphiql|swagger|swaggerUi|swagger_ui|actuator|exposure\\.include|pprof|expvar|enable_docs)[A-Za-z0-9_.]*[\"']?[[:space:]]*(:=|=|:)[[:space:]]*[\"']?(true|True|\\*|on|enabled)",
+    "(traceback\\.format_exc|traceback\\.print_exc|printStackTrace|\\.stack([^A-Za-z]|$)|debug\\.Stack\\(|debug\\.PrintStack\\()",
+    "(\\+|%|,|\\{)[[:space:]]*(str\\((e|err|exc|ex|error)\\)|(e|err|ex|error)\\.(Error\\(\\)|getMessage\\(\\)|message|toString\\(\\)))",
+    "(PROPAGATE_EXCEPTIONS|show_exceptions|display_errors|include[-_]?stacktrace|includeStackTrace)[\"']?[[:space:]]*(:|=)[[:space:]]*[\"']?(true|True|On|on|1|always)",
+    "(\"net/http/pprof\"|expvar\\.Publish|expvar\\.NewString|expvar\\.NewMap)",
+    "(^|[[:space:];])(set[[:space:]]+-[A-Za-z]*x|bash[[:space:]]+-[A-Za-z]*x)",
+    "(content|src):[[:space:]]*[\"']?\\{\\{[[:space:]]*[A-Za-z0-9_.]*(password|secret|token|key|cred)[A-Za-z0-9_.]*",
+    "(^|[^$])\\{\\{[[:space:]]*[a-z0-9_.]*(password|secret|token|_key)[a-z0-9_.]*[[:space:]]*\\}\\}",
+    "ACTIONS_(STEP|RUNNER)_DEBUG",
+    "echo[^|>]*\\$\\{\\{[[:space:]]*secrets\\."
+  ]
+}

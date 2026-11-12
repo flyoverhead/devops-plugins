@@ -1,0 +1,17 @@
+{
+  "name": "insecure-defaults",
+  "version": "1.0.0",
+  "description": "Static, read-only audit for insecure defaults: secrets with literal fallbacks, shipped credentials, fail-open switches, weak crypto, over-broad access and debug exposure in Go, Python, Bash, TypeScript, Terraform, Ansible and GitHub Actions, each candidate traced to the code that enforces it before it is reported.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "audit",
+    "secrets",
+    "configuration",
+    "github-actions"
+  ]
+}

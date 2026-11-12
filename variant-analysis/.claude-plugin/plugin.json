@@ -1,0 +1,17 @@
+{
+  "name": "variant-analysis",
+  "version": "1.0.0",
+  "description": "Takes one confirmed bug (path:line plus why it is wrong) and finds every other place in the repository, and optionally across a GitHub owner or local checkouts, where the same root cause appears: one root-cause statement, search axes, a pattern ladder widened one step at a time with ripgrep and local Semgrep rules, per-candidate triage with severity and confidence, a report in $TMPDIR and a Semgrep or rg regression guard. Static only.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "variant-analysis",
+    "semgrep",
+    "ripgrep",
+    "bug-hunting"
+  ]
+}

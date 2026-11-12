@@ -1,0 +1,17 @@
+{
+  "name": "semgrep-rule-creator",
+  "version": "1.0.0",
+  "description": "Writes one custom Semgrep rule test-first for Go, Python, Bash, TypeScript, Terraform, YAML, Ansible or Dockerfile code: annotated test file, AST dump, taint or pattern rule, and a local semgrep --test loop until every case passes, with no registry access.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "semgrep",
+    "sast",
+    "static-analysis",
+    "custom-rules"
+  ]
+}

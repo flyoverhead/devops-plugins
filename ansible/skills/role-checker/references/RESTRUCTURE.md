@@ -131,9 +131,14 @@ too; list them in the report.
 
 ## 4. Verify
 
-1. Defaults unchanged: compare `git show HEAD:roles/<role>/defaults/main.yml` with the
-   working copy after YAML parsing, for example
-   `python3 -c 'import sys, yaml; a, b = (yaml.safe_load(open(p)) for p in sys.argv[1:]); sys.exit(a != b)' <old> <new>`.
+1. Defaults unchanged: compare the committed defaults with the working copy after YAML
+   parsing with the bundled script (exit 0 equal, 1 different, 2 error):
+
+   ```bash
+   git show --no-ext-diff --no-textconv HEAD:roles/<role>/defaults/main.yml \
+     | python3 ${CLAUDE_SKILL_DIR}/scripts/yaml_equal.py - roles/<role>/defaults/main.yml
+   ```
+
    Keys and values must be equal; quoting and `True` → `true` are not changes.
 2. Removed facts: `grep -rnE '<role>_(installed|update)\b' .` finds nothing outside the
    CHANGELOG.
@@ -153,7 +158,7 @@ Do not run the role against real hosts.
 - **Not verified**, explicitly: idempotence when there is no `molecule/` (suggest
   `ansible:molecule-scaffolder`), platforms in `vars/` no test covered, check-mode runs,
   references to removed facts, tags or handlers in other repositories.
-- Review with `git diff HEAD -- roles/<role>`; revert with
+- Review with `git diff --no-ext-diff --no-textconv HEAD -- roles/<role>`; revert with
   `git restore --source=HEAD --staged --worktree roles/<role> && git clean -fd roles/<role>`
   (this also undoes the staged `git mv` and `git rm`).
 - Numbered questions for the ask items.

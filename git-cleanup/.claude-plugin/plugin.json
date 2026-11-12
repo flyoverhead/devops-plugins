@@ -1,0 +1,17 @@
+{
+  "name": "git-cleanup",
+  "version": "1.0.0",
+  "description": "User-started triage of local git branches and worktrees: sorts each into delete, needs review or keep from git state and merge or squash commit messages (gh optional), tries to disprove every delete candidate, and removes nothing until the user picks branches at a first gate and approves the exact commands at a second. Never touches remotes or pull requests.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "git",
+    "branches",
+    "worktrees",
+    "cleanup",
+    "squash-merge"
+  ]
+}

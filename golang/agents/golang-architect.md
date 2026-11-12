@@ -1,7 +1,7 @@
 ---
 name: golang-architect
 description: Go service architect - package boundaries, service decomposition, failure handling and observability decisions. Use for design reviews and architecture choices across services; produces decisions and trade-offs, not code.
-tools: Read, Grep, Glob, Bash
+tools: Read, Grep, Glob, Bash(go list:*), Bash(go mod graph)
 skills:
   - golang:golang-patterns
 ---

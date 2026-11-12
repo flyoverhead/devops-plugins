@@ -1,0 +1,53 @@
+---
+rules:
+  - id: variant-taint-python
+    languages: [python]
+    severity: ERROR
+    mode: taint
+    message: >-
+      Untrusted input reaches a dangerous call without the protection the original
+      bug lacked. Replace this message with the root-cause statement.
+    metadata:
+      category: security
+      variant-of: <path:line of the original bug>
+    pattern-sources:
+      - pattern-either:
+          - pattern: flask.request.$ATTR
+          - pattern: request.args
+          - pattern: request.form
+          - pattern: request.values
+          - pattern: request.json
+          - pattern: request.get_json(...)
+          - pattern: request.GET
+          - pattern: request.POST
+          - pattern: sys.argv
+          - pattern: os.environ
+          - pattern: os.getenv(...)
+          - pattern: os.environ.get(...)
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: int(...)
+          - pattern: shlex.quote(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: subprocess.$F($X, ..., shell=True, ...)
+              - pattern: os.system($X)
+              - pattern: os.popen($X, ...)
+          - focus-metavariable: $X
+      - patterns:
+          - pattern: $CUR.$M($Q, ...)
+          - metavariable-regex:
+              metavariable: $M
+              regex: ^(execute|executemany|executescript)$
+          - focus-metavariable: $Q
+      - patterns:
+          - pattern-either:
+              - pattern: open($P, ...)
+              - pattern: flask.send_file($P, ...)
+          - focus-metavariable: $P
+      - patterns:
+          - pattern-either:
+              - pattern: markupsafe.Markup($X)
+              - pattern: flask.render_template_string($X, ...)
+          - focus-metavariable: $X
