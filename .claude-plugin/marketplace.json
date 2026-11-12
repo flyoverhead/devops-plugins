@@ -5,14 +5,14 @@
     "name": "Aleksandr Letunov"
   },
   "metadata": {
-    "description": "Personal DevOps plugins for Claude Code: Ansible, Terraform, Go, API design"
+    "description": "Personal DevOps plugins for Claude Code: Ansible, Terraform, Go, API design, security review and testing"
   },
   "plugins": [
     {
       "name": "api",
       "source": "./api",
       "description": "API design and review: OpenAPI 3.1 specs, REST and GraphQL patterns, OWASP API Security Top 10 review with Spectral and Redocly linting",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "api",
       "author": {
         "name": "Aleksandr Letunov",
@@ -31,7 +31,7 @@
       "name": "golang",
       "source": "./golang",
       "description": "Go toolkit: version-aware idioms, concurrency fixes proven with the race detector, performance work backed by benchmarks and profiles, read-only code review, tests that match the repository, a GitHub-ready project scaffold and gopls LSP.",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "category": "development",
       "author": {
         "name": "Aleksandr Letunov",
@@ -49,7 +49,7 @@
       "name": "terraform",
       "source": "./terraform",
       "description": "Terraform toolkit: module-creator for YAML-driven modules with inheritance and validation layers (OpenStack, VMware, AWS, Azure, GCP, Proxmox), provider-creator for Plugin Framework providers with a GitHub Actions release, plus terraform-ls LSP and safety hooks",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "category": "infrastructure",
       "author": {
         "name": "Aleksandr Letunov",
@@ -69,7 +69,7 @@
       "name": "ansible",
       "source": "./ansible",
       "description": "Ansible toolkit: role creator in the classic upstream layout (install/configure/service, meta/argument_specs.yml, sentence-case names, true/false, FQCN, ansible-lint production profile), role checker and molecule scaffolder, plus a guard on real ansible-playbook runs",
-      "version": "1.0.0",
+      "version": "1.0.2",
       "category": "infrastructure",
       "author": {
         "name": "Aleksandr Letunov",
@@ -82,6 +82,349 @@
         "ansible-lint",
         "molecule",
         "automation"
+      ]
+    },
+    {
+      "name": "static-analysis",
+      "source": "./static-analysis",
+      "description": "Static analysis toolkit: local Semgrep audits with public registry packs behind an approval gate, SARIF 2.1.0 reading, filtering, diffing and CI gating, and CodeQL database builds with taint analysis behind a licence check and a plan gate.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "sast",
+        "semgrep",
+        "codeql",
+        "sarif"
+      ]
+    },
+    {
+      "name": "insecure-defaults",
+      "source": "./insecure-defaults",
+      "description": "Static, read-only audit for insecure defaults: secrets with literal fallbacks, shipped credentials, fail-open switches, weak crypto, over-broad access and debug exposure in Go, Python, Bash, TypeScript, Terraform, Ansible and GitHub Actions, each candidate traced to the code that enforces it before it is reported.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "audit",
+        "secrets",
+        "configuration",
+        "github-actions"
+      ]
+    },
+    {
+      "name": "sharp-edges",
+      "source": "./sharp-edges",
+      "description": "Read-only design review of interfaces for misuse: finds where the default, the copied example or the shortest call is the insecure one in Go, Python, TypeScript and Bash APIs, config schemas, Ansible role variables, Terraform module inputs and GitHub Actions or GitLab CI workflows, and proves each finding with a minimal misuse and a design fix.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "api-design",
+        "misuse-resistance",
+        "secure-defaults",
+        "github-actions"
+      ]
+    },
+    {
+      "name": "spec-to-code-compliance",
+      "source": "./spec-to-code-compliance",
+      "description": "Holds code to what its documents promise: extracts each requirement from READMEs, design notes, OpenAPI, argument_specs, Terraform variable descriptions, CI input text and help output, checks every one with a dedicated agent, has two more agents try to knock down each divergence, and writes a per-requirement verdict report with severity to $TMPDIR. Read-only; never runs the code.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "compliance",
+        "specification",
+        "documentation",
+        "audit"
+      ]
+    },
+    {
+      "name": "fp-check",
+      "source": "./fp-check",
+      "description": "Settles whether suspected security findings tied to a code location are real: restates each claim, traces source to sink, proves or refutes attacker control and impact, writes PoCs outside the repo without running them, and passes six gates before a TRUE or FALSE POSITIVE verdict. Takes scanner output, review findings or a pasted GitHub code-scanning alert.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "triage",
+        "false-positives",
+        "code-scanning",
+        "exploitability"
+      ]
+    },
+    {
+      "name": "differential-review",
+      "source": "./differential-review",
+      "description": "Security review of a change set (GitHub PR, commit range, single commit, branch or patch file): ranks changed files by risk, traces deleted checks to the commit that added them to catch regressions, counts dependents, raises risk for untested logic, builds attacker scenarios for every high-risk hunk, and writes the report to $TMPDIR. Works on any git host; GitHub PRs are read with gh when it is available.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "code-review",
+        "pull-request",
+        "regression",
+        "blast-radius"
+      ]
+    },
+    {
+      "name": "semgrep-rule-creator",
+      "source": "./semgrep-rule-creator",
+      "description": "Writes one custom Semgrep rule test-first for Go, Python, Bash, TypeScript, Terraform, YAML, Ansible or Dockerfile code: annotated test file, AST dump, taint or pattern rule, and a local semgrep --test loop until every case passes, with no registry access.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "semgrep",
+        "sast",
+        "static-analysis",
+        "custom-rules"
+      ]
+    },
+    {
+      "name": "semgrep-rule-variant-creator",
+      "source": "./semgrep-rule-variant-creator",
+      "description": "Ports an existing Semgrep rule to other languages, one independent cycle per language: applicability verdict, test file first, AST-guided rule and a local semgrep --test run, with no registry access. Languages Semgrep cannot parse are reported, not guessed.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "semgrep",
+        "sast",
+        "rule-porting",
+        "multi-language"
+      ]
+    },
+    {
+      "name": "vulnerability-triage-brocards",
+      "source": "./vulnerability-triage-brocards",
+      "description": "Decides whether a CVE, advisory, Dependabot alert or govulncheck/Trivy report merits action, using seven named decision rules checked against the repo, and writes a pasteable ACCEPT, DISMISS or NEEDS-MORE-INFO verdict. Read-only; never runs a scanner.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "vulnerability-triage",
+        "dependabot",
+        "govulncheck",
+        "cve"
+      ]
+    },
+    {
+      "name": "variant-analysis",
+      "source": "./variant-analysis",
+      "description": "Takes one confirmed bug (path:line plus why it is wrong) and finds every other place in the repository, and optionally across a GitHub owner or local checkouts, where the same root cause appears: one root-cause statement, search axes, a pattern ladder widened one step at a time with ripgrep and local Semgrep rules, per-candidate triage with severity and confidence, a report in $TMPDIR and a Semgrep or rg regression guard. Static only.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "variant-analysis",
+        "semgrep",
+        "ripgrep",
+        "bug-hunting"
+      ]
+    },
+    {
+      "name": "audit-context-building",
+      "source": "./audit-context-building",
+      "description": "Prepares a team to audit code it has never read: ranks the units that carry the most weight, has one analyzer agent per unit write down what it guarantees, what it takes on trust and what every callee does on every path, then merges those records into a dossier in $TMPDIR. Read-only; no verdicts, no execution.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "audit",
+        "threat-model",
+        "code-comprehension",
+        "invariants"
+      ]
+    },
+    {
+      "name": "property-based-testing",
+      "source": "./property-based-testing",
+      "description": "Writes property-based tests where code has an algebraic shape (roundtrip, inverse, invariant, oracle), reviews existing property suites for tests that prove nothing, and classifies shrunk counterexamples as code bug, wrong property, ambiguous spec or strategy artifact. Go native fuzz and rapid, Hypothesis, fast-check; never adds a dependency without an answer.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "testing",
+        "property-based-testing",
+        "fuzzing",
+        "hypothesis",
+        "fast-check"
+      ]
+    },
+    {
+      "name": "mutation-testing",
+      "source": "./mutation-testing",
+      "description": "Plans and sizes mutation campaigns for mewt or muton, gremlins, mutmut and Stryker behind an explicit yes, sorts every surviving mutant into equivalent, real test gap or unresolved with four impact tiers in mutation-testing-report.md, and hunts the bugs that survivors point at. Never installs a mutation tool.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "testing",
+        "mutation-testing",
+        "mewt",
+        "gremlins",
+        "mutmut",
+        "stryker"
+      ]
+    },
+    {
+      "name": "git-cleanup",
+      "source": "./git-cleanup",
+      "description": "User-started triage of local git branches and worktrees: sorts each into delete, needs review or keep from git state and merge or squash commit messages (gh optional), tries to disprove every delete candidate, and removes nothing until the user picks branches at a first gate and approves the exact commands at a second. Never touches remotes or pull requests.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "git",
+        "branches",
+        "worktrees",
+        "cleanup",
+        "squash-merge"
+      ]
+    },
+    {
+      "name": "code-improver",
+      "source": "./code-improver",
+      "description": "User-started review-and-fix loop over one directory: a reviewer you name (any installed review skill or agent) reports into a findings ledger kept under $TMPDIR, a scoped fixer agent repairs the blocking findings, a content-hash guard halts on any edit outside the agreed scope, oscillating findings go back to you, and the run counts as converged only after a clean re-review and a checked finalize pass. Never commits or pushes.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "review",
+        "fix-loop",
+        "ledger",
+        "scope-guard",
+        "code-quality"
+      ]
+    },
+    {
+      "name": "post-patch-validation",
+      "source": "./post-patch-validation",
+      "description": "Proves or disproves a finished security fix by running it: base and patched revisions in scratch worktrees, side-blind exploit and variant checks with a reach marker, behaviour and suite checks, hashed evidence in $TMPDIR, and a status that never claims merge readiness. GitHub PR, commit range, branch pair or patch file.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "patch-validation",
+        "variant-analysis",
+        "regression",
+        "pull-request"
+      ]
+    },
+    {
+      "name": "patching-bugs",
+      "source": "./patching-bugs",
+      "description": "One reported bug, reproduced on the unchanged build, re-run blind by a second agent, fixed at its invariant with a failing-first regression test and a single signed-off local commit, then proven on baseline, patched and reverted worktrees by yet another agent. Records, receipts and hash manifests stay in $TMPDIR; nothing is pushed.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "bug-fixing",
+        "reproduction",
+        "regression-test",
+        "proof"
+      ]
+    },
+    {
+      "name": "regression-hunt",
+      "source": "./regression-hunt",
+      "description": "Did a PR, commit or commit range break something that used to work? Pins the before and after states, hunts candidate regressions in the diff, then has three separate fresh agents reproduce, replay and adjudicate each one on live S0 and S1 builds. Sealed evidence, an attempt registry and an HTML/Markdown/JSON report stay in a campaign directory outside the repo; GitHub is only read.",
+      "version": "1.0.0",
+      "category": "security",
+      "author": {
+        "name": "Aleksandr Letunov",
+        "email": "flypatriotka@gmail.com"
+      },
+      "license": "MIT",
+      "keywords": [
+        "security",
+        "regression",
+        "reproduction",
+        "evidence",
+        "pull-request"
       ]
     }
   ]

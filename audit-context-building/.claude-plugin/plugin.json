@@ -1,0 +1,17 @@
+{
+  "name": "audit-context-building",
+  "version": "1.0.0",
+  "description": "Prepares a team to audit code it has never read: ranks the units that carry the most weight, has one analyzer agent per unit write down what it guarantees, what it takes on trust and what every callee does on every path, then merges those records into a dossier in $TMPDIR. Read-only; no verdicts, no execution.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "audit",
+    "threat-model",
+    "code-comprehension",
+    "invariants"
+  ]
+}

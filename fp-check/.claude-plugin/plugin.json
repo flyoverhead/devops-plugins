@@ -1,0 +1,17 @@
+{
+  "name": "fp-check",
+  "version": "1.0.0",
+  "description": "Settles whether suspected security findings tied to a code location are real: restates each claim, traces source to sink, proves or refutes attacker control and impact, writes PoCs outside the repo without running them, and passes six gates before a TRUE or FALSE POSITIVE verdict. Takes scanner output, review findings or a pasted GitHub code-scanning alert.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "triage",
+    "false-positives",
+    "code-scanning",
+    "exploitability"
+  ]
+}

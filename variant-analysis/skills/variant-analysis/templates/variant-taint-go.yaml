@@ -1,0 +1,64 @@
+---
+rules:
+  - id: variant-taint-go
+    languages: [go]
+    severity: ERROR
+    mode: taint
+    message: >-
+      Untrusted input ($SRC) reaches a dangerous call without the protection the
+      original bug lacked. Replace this message with the root-cause statement.
+    metadata:
+      category: security
+      variant-of: <path:line of the original bug>
+    pattern-sources:
+      - pattern-either:
+          - pattern: "($R : *http.Request).URL.Query()"
+          - pattern: "($R : *http.Request).FormValue(...)"
+          - pattern: "($R : *http.Request).PostFormValue(...)"
+          - pattern: "($R : *http.Request).PathValue(...)"
+          - pattern: "($R : *http.Request).Header.Get(...)"
+          - pattern: "($R : *http.Request).Body"
+          - pattern: os.Args
+          - pattern: flag.Arg(...)
+          - pattern: flag.Args()
+          - pattern: os.Getenv(...)
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: strconv.Atoi(...)
+          - pattern: strconv.ParseInt(...)
+          - pattern: strconv.ParseBool(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: exec.Command($SH, "-c", $X, ...)
+              - pattern: exec.CommandContext($CTX, $SH, "-c", $X, ...)
+          - focus-metavariable: $X
+      - patterns:
+          - pattern-either:
+              - pattern: "($DB : *sql.DB).$M($Q, ...)"
+              - pattern: "($TX : *sql.Tx).$M($Q, ...)"
+          - metavariable-regex:
+              metavariable: $M
+              regex: ^(Query|QueryRow|Exec|Prepare)$
+          - focus-metavariable: $Q
+      - patterns:
+          - pattern-either:
+              - pattern: "($DB : *sql.DB).$M($CTX, $Q, ...)"
+              - pattern: "($TX : *sql.Tx).$M($CTX, $Q, ...)"
+          - metavariable-regex:
+              metavariable: $M
+              regex: ^(QueryContext|QueryRowContext|ExecContext|PrepareContext)$
+          - focus-metavariable: $Q
+      - patterns:
+          - pattern-either:
+              - pattern: os.Open($P)
+              - pattern: os.OpenFile($P, ...)
+              - pattern: os.ReadFile($P)
+              - pattern: http.ServeFile($W, $REQ, $P)
+          - focus-metavariable: $P
+      - patterns:
+          - pattern-either:
+              - pattern: template.HTML($X)
+              - pattern: template.JS($X)
+              - pattern: template.HTMLAttr($X)
+          - focus-metavariable: $X

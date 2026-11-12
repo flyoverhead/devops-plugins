@@ -1,0 +1,17 @@
+{
+  "name": "spec-to-code-compliance",
+  "version": "1.0.0",
+  "description": "Holds code to what its documents promise: extracts each requirement from READMEs, design notes, OpenAPI, argument_specs, Terraform variable descriptions, CI input text and help output, checks every one with a dedicated agent, has two more agents try to knock down each divergence, and writes a per-requirement verdict report with severity to $TMPDIR. Read-only; never runs the code.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "compliance",
+    "specification",
+    "documentation",
+    "audit"
+  ]
+}

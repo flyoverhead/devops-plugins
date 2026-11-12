@@ -1,0 +1,22 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Semgrep OSS",
+          "rules": [
+            {"id": "go.lang.security.audit.dangerous-exec-command", "defaultConfiguration": {"level": "warning"}},
+            {"id": "generic.secrets.security.detected-generic-secret", "defaultConfiguration": {"level": "error"}}
+          ]
+        }
+      },
+      "results": [
+        {"ruleId": "go.lang.security.audit.dangerous-exec-command", "level": "error", "message": {"text": "Command built from a request value."}, "locations": [{"physicalLocation": {"artifactLocation": {"uri": "cmd/server/main.go"}, "region": {"startLine": 31}}}]},
+        {"ruleId": "generic.secrets.security.detected-generic-secret", "level": "note", "message": {"text": "Possible secret in a test fixture."}, "locations": [{"physicalLocation": {"artifactLocation": {"uri": "testdata/config.yaml"}, "region": {"startLine": 4}}}]},
+        {"ruleId": "go.lang.security.audit.dangerous-exec-command", "kind": "pass", "level": "error", "message": {"text": "Checked, constant argument."}, "locations": [{"physicalLocation": {"artifactLocation": {"uri": "cmd/tool/main.go"}, "region": {"startLine": 9}}}]}
+      ]
+    }
+  ]
+}

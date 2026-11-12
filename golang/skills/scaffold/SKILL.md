@@ -103,3 +103,10 @@ Hand these to the user. Run none of them without a yes.
 2. Make the first signed-off commit: `git add -A && git commit -s -m "feat: scaffold <name> <kind>"`.
 3. Release by pushing a `vX.Y.Z` tag. No extra secrets are needed. For a service, the first push creates the GHCR package, so check its visibility and repository access afterwards.
 4. For service design questions, use `golang:golang-architect`.
+
+## Limits
+
+- `go test` and `go vet`: never `-exec`, `-toolexec`, `-vettool` or `-overlay`; they run other
+  programs in place of the toolchain's own.
+- `go build`: never `-toolexec`, `-overlay` or `-o`; they run other programs or write the
+  binary over any path. `go build ./...` is enough to prove the code compiles.

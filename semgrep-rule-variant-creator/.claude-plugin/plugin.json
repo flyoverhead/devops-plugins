@@ -1,0 +1,17 @@
+{
+  "name": "semgrep-rule-variant-creator",
+  "version": "1.0.0",
+  "description": "Ports an existing Semgrep rule to other languages, one independent cycle per language: applicability verdict, test file first, AST-guided rule and a local semgrep --test run, with no registry access. Languages Semgrep cannot parse are reported, not guessed.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "semgrep",
+    "sast",
+    "rule-porting",
+    "multi-language"
+  ]
+}

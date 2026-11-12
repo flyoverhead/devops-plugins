@@ -4,7 +4,7 @@ description: API architect for platforms built from several services — version
 color: green
 effort: high
 maxTurns: 40
-tools: Read, Write, Edit, Bash, Glob, Grep
+tools: Read, Write, Edit, Bash(npx @stoplight/spectral-cli@6.17.0 *), Bash(npx @redocly/cli@2.65.1 *), Glob, Grep
 skills: [api:api-designer]
 ---
 

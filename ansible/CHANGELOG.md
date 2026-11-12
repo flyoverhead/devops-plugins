@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-11-12
+
+### Changed
+
+- `molecule-scaffolder` and `role-checker`: a `## Limits` section forbids `--output` and `--ext-diff` on the pre-allowed `git diff`/`git show`.
+- `molecule-scaffolder` and `role-checker`: `## Limits` also forbids `--textconv`; every documented `git diff`/`git show` passes `--no-ext-diff --no-textconv`.
+- `role-checker`: `python3 -c` is no longer pre-allowed. The restructure verify step compares old and new defaults with the bundled `scripts/yaml_equal.py`, pre-allowed by its exact path.
+- Agent `ansible-engineer`: read-only, with tools limited to Read, Grep, Glob, `ansible-lint`, `yamllint`, `ansible-playbook --syntax-check` and `git log`; `--check` and real runs are handed to the user. A `## Limits` section names the forbidden flags.
+
 ## 2026-11-03
 
 - Skill `role-creator`: Ansible roles in the classic layout (`install`/`configure`/`service` task files, `meta/argument_specs.yml`, role-prefixed variables) with sentence-case task names, `true`/`false` booleans and FQCN modules, for package, binary or container installs, linted with the ansible-lint `production` profile.

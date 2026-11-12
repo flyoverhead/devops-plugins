@@ -1,0 +1,6 @@
+---
+schema_version: "1.1"
+name: outcome-regression
+tags: [outcome]
+context:
+  scaffold_script: setup.sh

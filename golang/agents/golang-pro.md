@@ -1,7 +1,7 @@
 ---
 name: golang-pro
 description: Go implementer - writes idiomatic, tested Go for services, CLIs, CI helpers and Terraform providers following the golang plugin skills. Use for multi-file Go implementation work delegated as a subagent; for single questions load the matching golang skill instead.
-tools: Read, Write, Edit, Bash, Glob, Grep
+tools: Read, Write, Edit, Bash(gofmt:*), Bash(go vet:*), Bash(go build:*), Bash(go test:*), Bash(go list:*), Bash(go mod tidy), Glob, Grep
 skills:
   - golang:golang-patterns
   - golang:test
@@ -36,6 +36,8 @@ All clean, and `gofmt -l` prints nothing. If `-race` cannot run (`requires cgo`)
 - Commit, push, open a merge request or tag.
 - Overwrite an existing file you were not told to change without showing the diff.
 - Run `terraform apply`, `go install` of an unpinned tool, or anything against real hosts.
+- Pass `-exec`, `-toolexec`, `-vettool` or `-overlay` to `go test` or `go vet`.
+- Pass `-toolexec`, `-overlay` or `-o` to `go build`.
 
 ## Report
 

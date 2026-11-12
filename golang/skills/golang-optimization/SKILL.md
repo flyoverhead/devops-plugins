@@ -85,3 +85,10 @@ Use it only for hot, short-lived objects that a heap profile shows dominating al
 3. Commit `default.pgo` in the main package directory (`cmd/<name>/`). `-pgo=auto` has been the default since 1.21, so `go build` and goreleaser pick it up.
 4. Verify with the benchmark checklist above.
 5. Refresh it when hot paths change. A stale profile is safe; it just helps less.
+
+## Limits
+
+- `go test` and `go vet`: never `-exec`, `-toolexec`, `-vettool` or `-overlay`; they run other
+  programs in place of the toolchain's own.
+- `go build`: never `-toolexec`, `-overlay` or `-o`; they run other programs or write the
+  binary over any path. `go build ./...` is enough to prove the code compiles.

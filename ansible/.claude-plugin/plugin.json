@@ -1,6 +1,6 @@
 {
   "name": "ansible",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Ansible toolkit: role creator in the classic upstream layout (install/configure/service, meta/argument_specs.yml, sentence-case names, true/false, FQCN, ansible-lint production profile), role checker and molecule scaffolder, plus a guard on real ansible-playbook runs",
   "author": {
     "name": "Aleksandr Letunov",

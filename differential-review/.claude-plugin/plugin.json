@@ -1,0 +1,17 @@
+{
+  "name": "differential-review",
+  "version": "1.0.0",
+  "description": "Security review of a change set (GitHub PR, commit range, single commit, branch or patch file): ranks changed files by risk, traces deleted checks to the commit that added them to catch regressions, counts dependents, raises risk for untested logic, builds attacker scenarios for every high-risk hunk, and writes the report to $TMPDIR. Works on any git host; GitHub PRs are read with gh when it is available.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "code-review",
+    "pull-request",
+    "regression",
+    "blast-radius"
+  ]
+}

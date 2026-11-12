@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-11-12
+
+### Changed
+
+- `provider-creator`: a `## Limits` section forbids `-exec`, `-toolexec`, `-vettool` and `-overlay` on the pre-allowed `go test`/`go vet`.
+- `provider-creator`: `## Limits` forbids `-toolexec`, `-overlay` and `-o` on the pre-allowed `go build`.
+- Agent `terraform-engineer`: read-only, with tools limited to Read, Grep, Glob, `terraform fmt -check`, `terraform validate` and `git log`. A `## Limits` section names the forbidden flags.
+
 ## 2026-11-03
 
 Initial release.

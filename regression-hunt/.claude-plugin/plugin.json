@@ -1,0 +1,17 @@
+{
+  "name": "regression-hunt",
+  "version": "1.0.0",
+  "description": "Did a PR, commit or commit range break something that used to work? Pins the before and after states, hunts candidate regressions in the diff, then has three separate fresh agents reproduce, replay and adjudicate each one on live S0 and S1 builds. Sealed evidence, an attempt registry and an HTML/Markdown/JSON report stay in a campaign directory outside the repo; GitHub is only read.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "regression",
+    "reproduction",
+    "evidence",
+    "pull-request"
+  ]
+}

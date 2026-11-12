@@ -1,6 +1,6 @@
 {
   "name": "api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "API design and review: OpenAPI 3.1 specs, REST and GraphQL patterns, OWASP API Security Top 10 review with Spectral and Redocly linting",
   "author": {
     "name": "Aleksandr Letunov",

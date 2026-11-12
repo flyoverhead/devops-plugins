@@ -1,0 +1,17 @@
+{
+  "name": "sharp-edges",
+  "version": "1.0.0",
+  "description": "Read-only design review of interfaces for misuse: finds where the default, the copied example or the shortest call is the insecure one in Go, Python, TypeScript and Bash APIs, config schemas, Ansible role variables, Terraform module inputs and GitHub Actions or GitLab CI workflows, and proves each finding with a minimal misuse and a design fix.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "api-design",
+    "misuse-resistance",
+    "secure-defaults",
+    "github-actions"
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "name": "mutation-testing",
+  "version": "1.0.0",
+  "description": "Plans and sizes mutation campaigns for mewt or muton, gremlins, mutmut and Stryker behind an explicit yes, sorts every surviving mutant into equivalent, real test gap or unresolved with four impact tiers in mutation-testing-report.md, and hunts the bugs that survivors point at. Never installs a mutation tool.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "testing",
+    "mutation-testing",
+    "mewt",
+    "gremlins",
+    "mutmut",
+    "stryker"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "property-based-testing",
+  "version": "1.0.0",
+  "description": "Writes property-based tests where code has an algebraic shape (roundtrip, inverse, invariant, oracle), reviews existing property suites for tests that prove nothing, and classifies shrunk counterexamples as code bug, wrong property, ambiguous spec or strategy artifact. Go native fuzz and rapid, Hypothesis, fast-check; never adds a dependency without an answer.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "testing",
+    "property-based-testing",
+    "fuzzing",
+    "hypothesis",
+    "fast-check"
+  ]
+}

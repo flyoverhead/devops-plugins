@@ -1,0 +1,18 @@
+{
+  "id": "fail-open-security",
+  "title": "Checks that fail open",
+  "seeds": [
+    "(AUTH|VERIFY|CSRF|auth|verify|csrf|Auth|Verify|Csrf)[A-Za-z0-9_]*[\"']?[[:space:]]*(:=|=|:)[[:space:]]*[\"']?(false|False|FALSE|no|off|0)[\"']?([^A-Za-z0-9]|$)",
+    "verify[[:space:]]*=[[:space:]]*False",
+    "(getenv|environ\\.get|Getenv|env\\.get|envOr|getEnv)\\([^,)]+,[[:space:]]*[\"'](false|False|0|no|off|disabled)[\"']",
+    "(process\\.env\\.[A-Za-z0-9_]+|getenv\\([^)]*\\)|environ\\.get\\([^)]*\\))[[:space:]]*(\\|\\||\\?\\?|or)[[:space:]]*[\"']?(false|False|0|no|off)",
+    "InsecureSkipVerify:[[:space:]]*true",
+    "(validate_certs|verify_ssl|ssl_verify|sslverify|tls_verify|verify_certs)[\"']?[[:space:]]*(:|=)[[:space:]]*[\"']?(false|False|no|0)",
+    "(insecure|skip_tls_verify|insecure_skip_verify|tls_insecure|allow_unverified_ssl|skip_cert_verify)[A-Za-z0-9_]*[\"']?[[:space:]]*(:|=)[[:space:]]*[\"']?(true|True|yes|1)",
+    "(curl[^|;&]*[[:space:]](-[A-Za-z]*k[A-Za-z]*|--insecure)([[:space:]]|$)|wget[^|;&]*--no-check-certificate)",
+    "continue-on-error:[[:space:]]*true",
+    "\\|\\|[[:space:]]*true([[:space:]]|$|\")",
+    "NODE_TLS_REJECT_UNAUTHORIZED[\"']?[[:space:]]*[=:][[:space:]]*[\"']?0",
+    "if:[[:space:]]*(\\$\\{\\{[[:space:]]*)?always\\(\\)"
+  ]
+}

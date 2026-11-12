@@ -26,13 +26,13 @@ Report problems; never fix them. Paths are relative to the user's repository (th
 
 ## Read-only
 
-Never edit, write, format or commit. Never run `go mod tidy`, `gofmt -w`, or any tool with `--fix`. The tool list in the frontmatter has no write access on purpose.
+Never edit, write, format or commit. Never run `go mod tidy`, `gofmt -w`, or any tool with `--fix`. The tool list in the frontmatter has no write access on purpose. Never pass `--output` or `--ext-diff` to `git diff` or `git log`, nor `-vettool` or `-toolexec` to `go vet`: they write files or run other programs.
 
 ## Target
 
 1. A path: its `.go` files, recursively, skipping `vendor/` and generated files (a header comment `Code generated ... DO NOT EDIT.`).
-2. A git range or commit: `git diff <range> -- '*.go'`, plus enough surrounding code to judge each hunk.
-3. Empty: `git diff --merge-base origin/main -- '*.go'`. If that fails, the changed `.go` files from `git status --short`. If there are none, every `.go` file under the current directory.
+2. A git range or commit: `git diff --no-ext-diff --no-textconv <range> -- '*.go'`, plus enough surrounding code to judge each hunk.
+3. Empty: `git diff --no-ext-diff --no-textconv --merge-base origin/main -- '*.go'`. If that fails, the changed `.go` files from `git status --short`. If there are none, every `.go` file under the current directory.
 
 State which rule applied.
 
@@ -103,6 +103,6 @@ store/user.go:12 — Critical — const dbPassword holds a credential — read i
 store/user.go:51 — High — error from rows.Err() ignored — check and return it
 
 Tools: go vet - 1 finding; staticcheck - not installed; govulncheck - clean
-Scope: git diff --merge-base origin/main, 3 files
+Scope: git diff --no-ext-diff --no-textconv --merge-base origin/main, 3 files
 Not checked: runtime behaviour, database schema
 ```

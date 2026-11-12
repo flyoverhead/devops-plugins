@@ -1,0 +1,17 @@
+{
+  "name": "static-analysis",
+  "version": "1.0.0",
+  "description": "Static analysis toolkit: local Semgrep audits with public registry packs behind an approval gate, SARIF 2.1.0 reading, filtering, diffing and CI gating, and CodeQL database builds with taint analysis behind a licence check and a plan gate.",
+  "author": {
+    "name": "Aleksandr Letunov",
+    "email": "flypatriotka@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "sast",
+    "semgrep",
+    "codeql",
+    "sarif"
+  ]
+}
